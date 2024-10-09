@@ -1,0 +1,3 @@
+kasutaja1:qwerty
+kasutaja2:qwerty
+kasutaja3:qwerty
