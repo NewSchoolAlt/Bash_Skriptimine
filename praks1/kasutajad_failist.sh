@@ -1,31 +1,31 @@
 #!/bin/bash
 
-# Check if the correct number of arguments is provided
+# vaatame kas fail on antud
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <filename>"
     exit 1
 fi
 
-# Assign the input argument to a variable
+# Assignime faili
 filename="$1"
 
-# Check if the file exists and is readable
+# vaatame kas fail eksisteerib
 if [ ! -f "$filename" ] || [ ! -r "$filename" ]; then
     echo "File not found or not readable: $filename"
     exit 1
 fi
 
-# Read the file line by line
+# loeme faili
 while IFS=: read -r username password || [[ -n "$username" ]]; do
     if [[ -z "$username" || -z "$password" ]]; then
         echo "Invalid format in $filename. Expected format: username:password"
         continue
     fi
 
-    # Add the user using the lisa_kasutaja script
+    # kutsume teist skripti kasutajaga
     ./lisa_kasutaja.sh "$username"
 
-    # Set the password for the user
+    # Setime parooli kasutajale
     echo "$username:$password" | sudo chpasswd
     if [ $? -eq 0 ]; then
         echo "User $username added with the specified password."

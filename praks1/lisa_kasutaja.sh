@@ -19,4 +19,4 @@ sudo mkdir -p /home/"$KASUTAJA"/.local/share
 sudo chown -R "$KASUTAJA":"$KASUTAJA" /home/"$KASUTAJA"
 
 echo "Kasutaja $KASUTAJA on loodud ja kodukataloog on seadistatud."
-figlet "Made by olev"
+figlet "Made by olev" | /usr/games/lolcat
