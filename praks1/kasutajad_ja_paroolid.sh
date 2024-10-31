@@ -2,13 +2,26 @@
 
 # Kontrollime, kas on antud kaks argumenti (kasutajate ja paroolide failid)
 if [ $# -ne 2 ]; then
-    echo "Kasutamine: $0 <kasutajate_fail> <paroolide_fail>"
-    exit 1
-fi
+    echo "Failide valimine fzf abil, kuna argumente ei antud..."
 
-# Määrame sisendargumendid muutujatesse
-kasutajate_fail="$1"
-paroolide_fail="$2"
+    # Kasutajate fail
+    kasutajate_fail=$(fzf --prompt="Vali kasutajate fail: " --preview="cat {}")
+    if [ -z "$kasutajate_fail" ]; then
+        echo "Kasutajate faili ei valitud. Väljun..."
+        exit 1
+    fi
+
+    # Paroolide fail
+    paroolide_fail=$(fzf --prompt="Vali paroolide fail: " --preview="cat {}")
+    if [ -z "$paroolide_fail" ]; then
+        echo "Paroolide faili ei valitud. Väljun..."
+        exit 1
+    fi
+else
+    # Määrame sisendargumendid muutujatesse
+    kasutajate_fail="$1"
+    paroolide_fail="$2"
+fi
 
 # Kontrollime, kas mõlemad failid eksisteerivad ja on loetavad
 if [ ! -f "$kasutajate_fail" ] || [ ! -r "$kasutajate_fail" ]; then
@@ -37,8 +50,8 @@ paste "$kasutajate_fail" "$paroolide_fail" | while IFS=$'\t' read -r kasutajanim
         continue
     fi
 
-    # Lisame kasutaja ilma kodukataloogi loomiseta (-M lipp)
-    sudo useradd -m "$kasutajanimi"
+    # Lisame kasutaja kodukataloogi loomisega (-m lipp) ja määrame kestaks /bin/bash
+    sudo useradd -m -s /bin/bash "$kasutajanimi"
 
     # Määrame kasutajale parooli
     echo "$kasutajanimi:$parool" | sudo chpasswd

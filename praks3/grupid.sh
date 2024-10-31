@@ -1,6 +1,6 @@
 #!/bin/bash
 echo " "
-echo " kui tahad lõpetada siis vajuta X klahvi ja enter "
+echo " Kui tahad lõpetada, siis vajuta X klahvi ja enter "
 echo " "
 while true; do
     # Küsi kasutaja nimi
@@ -27,11 +27,16 @@ while true; do
         continue
     fi
 
-    # Loo kasutaja
-    sudo useradd -m -s /bin/bash "$username"
-    if [ $? -ne 0 ]; then
-        echo "Kasutaja loomine ebaõnnestus."
-        continue
+    # Kontrolli, kas kasutaja juba eksisteerib
+    if id "$username" &>/dev/null; then
+        echo "Kasutaja $username juba eksisteerib. Lisatakse gruppi $group."
+    else
+        # Loo uus kasutaja, kui kasutaja ei eksisteeri
+        sudo useradd -m -s /bin/bash "$username"
+        if [ $? -ne 0 ]; then
+            echo "Kasutaja loomine ebaõnnestus."
+            continue
+        fi
     fi
 
     # Lisa kasutaja gruppi
@@ -41,15 +46,19 @@ while true; do
         continue
     fi
 
-    # Määra kodukataloogi õigused
-    sudo chown "$username:$group" "/home/$username"
-    sudo chmod 700 "/home/$username"
+    # Määra kodukataloogi õigused, kui kasutaja loodi uue kasutajana
+    if [ ! -d "/home/$username" ]; then
+        sudo mkdir -p "/home/$username"
+        sudo chown "$username:$group" "/home/$username"
+        sudo chmod 700 "/home/$username"
+    fi
 
-    # Määra kasutajale parool
-    sudo passwd "$username"
+    # Määra kasutajale parool ainult, kui kasutaja loodi just uue kasutajana
+    if passwd -S "$username" | grep -q "NP"; then
+        sudo passwd "$username"
+    fi
 
     # Näita kasutaja infot
-    echo "Kasutaja $username loodud!"
-    echo "Grupp: $group"
+    echo "Kasutaja $username on nüüd grupis $group!"
     echo "Kodukataloog: /home/$username"
 done

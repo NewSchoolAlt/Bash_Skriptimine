@@ -42,7 +42,7 @@ while IFS= read -r kasutajanimi || [[ -n "$kasutajanimi" ]]; do
     parool=$(pwgen -s 8 1)
 
     # Lisame kasutaja ja määrame parooli
-    sudo useradd -m "$kasutajanimi"
+    sudo useradd -m -s /bin/bash "$kasutajanimi"
     echo "$kasutajanimi:$parool" | sudo chpasswd
 
     if [ $? -eq 0 ]; then

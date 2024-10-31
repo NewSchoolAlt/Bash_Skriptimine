@@ -8,8 +8,8 @@ fi
 
 KASUTAJA=$1
 
-# Loo kasutaja ilma paroolita
-sudo useradd -m "$KASUTAJA"
+# Loo kasutaja ilma paroolita ja määra Bash shell
+sudo useradd -m -s /bin/bash "$KASUTAJA"
 
 # Loo kodukatalooge ja peidetud failid
 sudo mkdir -p /home/"$KASUTAJA"/.config
